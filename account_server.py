@@ -39,7 +39,7 @@ def insert():
     cookie = request.args.get('cookie',None)
     email = request.args.get('email',None)
     extra = request.args.get('extra',None)
-    if site and uname and passwd and cookie:
+    if site and uname and passwd:
         data = db.insert(site,uname,passwd,cookie,email,extra)
         return jsonify({'status':0,'info':'ok','data':data})
     else:
