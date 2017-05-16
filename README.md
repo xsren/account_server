@@ -9,6 +9,8 @@ account_helper.py 是我封装的获取 account、新增 account 和删除 accou
 
 ## 一、API
 
+每个请求都需要加上token
+
 ### 1、获取accont
 
 数据库层按照使用时间排序返回，最长时间没有被使用的账号将会被有限返回。
@@ -51,7 +53,7 @@ data 格式如下：
 服务默认运行在本机的5002端口，请求1个socks5代理的请求如下：
 
 ```
-http://127.0.0.1:5002/select?site=angel&count=1
+http://127.0.0.1:5002/select?site=angel&count=1&token=
 ```
 
 返回:

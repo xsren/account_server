@@ -1,13 +1,29 @@
 #coding:utf8
-from flask import Flask
-from flask import request
-from flask import jsonify
+from flask import Flask, request, jsonify, Response
+
+from functools import wraps
 
 from config import DB_CONFIG
 
 app = Flask(__name__)
 
+token_list = ['2567a5ec9705eb7ac2c984033e06189d']
 
+def authenticate():
+    """Sends a 401 response that enables basic auth"""
+    return Response(
+    'Could not verify your access level for that URL, need token.\n', 403,
+    {'WWW-Authenticate': 'Basic realm="token Required"'})
+
+def auth(fun):
+    @wraps(fun)
+    def wrapper_fun(*args, **kwargs):
+        token = request.args.get("token",None)
+        if token in token_list:
+            return fun(*args, **kwargs)
+        else:
+            return authenticate()
+    return wrapper_fun
 
 def get_db():
     if DB_CONFIG['DB_CONNECT_TYPE'] == 'pymongo':
@@ -22,6 +38,7 @@ def get_db():
 
 db = get_db()
 
+@auth
 @app.route('/delete')
 def delete():
     uid = request.args.get('uid',None)
@@ -31,6 +48,7 @@ def delete():
     else:
         return jsonify({'status':1,'info':'param not enough'})
 
+@auth
 @app.route('/insert')
 def insert():
     site = request.args.get('site',None)
@@ -45,6 +63,7 @@ def insert():
     else:
         return jsonify({'status':1,'info':'param not enough'})
 
+@auth
 @app.route('/select')
 def select():
     site = request.args.get('site',None)
@@ -58,4 +77,4 @@ def select():
 
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=5002, debug=True)
+    app.run(host='0.0.0.0', port=5002, debug=False)
