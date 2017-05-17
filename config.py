@@ -11,3 +11,4 @@ DB_CONFIG = {
 
 MONGO_DB = 'mydb'
 MONGO_COLL = 'accounts'
+TOKEN_COLL = 'accounts_token'

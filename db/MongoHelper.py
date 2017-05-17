@@ -1,5 +1,5 @@
 import pymongo
-from config import DB_CONFIG, MONGO_DB, MONGO_COLL
+from config import DB_CONFIG, MONGO_DB, MONGO_COLL, TOKEN_COLL
 
 from db.ISqlHelper import ISqlHelper
 import time
@@ -16,6 +16,12 @@ class MongoHelper(ISqlHelper):
 
     def drop_db(self):
         self.client.drop_database(self.db)
+
+    def find_token(self, token):
+        if self.db[TOKEN_COLL].find_one({'token':token}):
+            return True
+        else:
+            return False
 
     def select(self, site, count=1):
         items = self.coll.find({'site':site}).limit(count).sort([('last_use_time',pymongo.ASCENDING)])

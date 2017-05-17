@@ -7,23 +7,11 @@ from config import DB_CONFIG
 
 app = Flask(__name__)
 
-token_list = ['2567a5ec9705eb7ac2c984033e06189d']
-
 def authenticate():
     """Sends a 401 response that enables basic auth"""
     return Response(
     'Could not verify your access level for that URL, need token.\n', 403,
     {'WWW-Authenticate': 'Basic realm="token Required"'})
-
-def auth(fun):
-    @wraps(fun)
-    def wrapper_fun(*args, **kwargs):
-        token = request.args.get("token",None)
-        if token in token_list:
-            return fun(*args, **kwargs)
-        else:
-            return authenticate()
-    return wrapper_fun
 
 def get_db():
     if DB_CONFIG['DB_CONNECT_TYPE'] == 'pymongo':
@@ -37,6 +25,16 @@ def get_db():
     return sqlhelper
 
 db = get_db()
+
+def auth(fun):
+    @wraps(fun)
+    def wrapper_fun(*args, **kwargs):
+        token = request.args.get("token",None)
+        if db.find_token(token):
+            return fun(*args, **kwargs)
+        else:
+            return authenticate()
+    return wrapper_fun
 
 @auth
 @app.route('/delete')
