@@ -23,6 +23,10 @@ class MongoHelper(ISqlHelper):
         else:
             return False
 
+    def insert_token(self, token):
+        if not self.db[TOKEN_COLL].find_one({'token':token}):
+            self.db[TOKEN_COLL].insert({'token':token,'date':time.strftime('%Y-%m-%d %H:%M:%S')})
+
     def select(self, site, count=1):
         items = self.coll.find({'site':site}).limit(count).sort([('last_use_time',pymongo.ASCENDING)])
         results = []

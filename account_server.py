@@ -1,6 +1,5 @@
 #coding:utf8
 from flask import Flask, request, jsonify, Response
-
 from functools import wraps
 
 from config import DB_CONFIG
@@ -36,8 +35,8 @@ def auth(fun):
             return authenticate()
     return wrapper_fun
 
-@auth
 @app.route('/delete')
+@auth
 def delete():
     uid = request.args.get('uid',None)
     if uid:
@@ -46,8 +45,8 @@ def delete():
     else:
         return jsonify({'status':1,'info':'param not enough'})
 
-@auth
 @app.route('/insert')
+@auth
 def insert():
     site = request.args.get('site',None)
     uname = request.args.get('uname',None)
@@ -61,8 +60,8 @@ def insert():
     else:
         return jsonify({'status':1,'info':'param not enough'})
 
-@auth
 @app.route('/select')
+@auth
 def select():
     site = request.args.get('site',None)
     count = int(request.args.get('count',1))

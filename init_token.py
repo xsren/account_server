@@ -17,14 +17,11 @@ def get_db():
 db = get_db()
 
 @click.command()
-@click.option('--tolen', default='4cc5fbe69e2a93d48bef68319b763541', help='add')
+@click.option('--token', default='4cc5fbe69e2a93d48bef68319b763541', help='add token')
 def main(token):
     click.echo('start to insert token:%s'%token)
-    if not db[TOKEN_COLL].find_one({'token':token}):
-        db[TOKEN_COLL].insert({'token':token,'date':time.strftime()})
-        click.echo('success to insert token:%s'%token)
-    else:
-        click.echo('already has token:%s'%token)
+    db.insert_token(token)
+    click.echo('success to insert token:%s'%token)
 
 if __name__ == '__main__':
     main()
