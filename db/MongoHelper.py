@@ -6,6 +6,7 @@ import time
 
 from utils import md5
 
+
 class MongoHelper(ISqlHelper):
     def __init__(self):
         self.client = pymongo.MongoClient(DB_CONFIG['DB_CONNECT_STRING'], connect=False)
@@ -18,44 +19,47 @@ class MongoHelper(ISqlHelper):
         self.client.drop_database(self.db)
 
     def find_token(self, token):
-        if self.db[TOKEN_COLL].find_one({'token':token}):
+        if self.db[TOKEN_COLL].find_one({'token': token}):
             return True
         else:
             return False
 
     def insert_token(self, token):
-        if not self.db[TOKEN_COLL].find_one({'token':token}):
-            self.db[TOKEN_COLL].insert({'token':token,'date':time.strftime('%Y-%m-%d %H:%M:%S')})
+        if not self.db[TOKEN_COLL].find_one({'token': token}):
+            self.db[TOKEN_COLL].insert({'token': token, 'date': time.strftime('%Y-%m-%d %H:%M:%S')})
 
     def select(self, site, count=1):
-        items = self.coll.find({'site':site}).limit(count).sort([('last_use_time',pymongo.ASCENDING)])
+        items = self.coll.find({'site': site}).limit(count).sort([('last_use_time', pymongo.ASCENDING)])
         results = []
         for item in items:
-            self.coll.update_one({'uid':item['uid']},{'$set':{'last_use_time':time.time()}})
-            result = {'uid':item['uid'],
-                    'site':item['site'],
-                    'uname':item['uname'],
-                    'passwd':item['passwd'],
-                    'cookie':item['cookie'],
-                    'email':item.get('email',None),
-                    'extra':item.get('extra',None)}
+            self.coll.update_one({'uid': item['uid']}, {'$set': {'last_use_time': time.time()}})
+            result = {'uid': item['uid'],
+                      'site': item['site'],
+                      'uname': item['uname'],
+                      'passwd': item['passwd'],
+                      'cookie': item['cookie'],
+                      'email': item.get('email', None),
+                      'extra': item.get('extra', None)}
             results.append(result)
         return results
 
     def insert(self, site, uname, passwd, cookie, email, extra):
-        data = {'site':site,
-                'uname':uname,
-                'passwd':passwd,
-                'cookie':cookie,
-                'email':email,
-                'extra':extra,
-                'last_use_time':time.time(),
-                'uid':md5(site+uname)}
+        uid = md5(site + uname)
+        if self.coll.find_one({'uid': uid}):
+            return 'already insert......'
+        data = {'site': site,
+                'uname': uname,
+                'passwd': passwd,
+                'cookie': cookie,
+                'email': email,
+                'extra': extra,
+                'last_use_time': time.time(),
+                'uid': uid}
         self.coll.insert_one(data)
         return 'ok'
 
     def delete(self, uid):
-        self.coll.delete_one({'uid':uid})
+        self.coll.delete_one({'uid': uid})
         return 'ok'
 
 

@@ -1,7 +1,8 @@
-#coding:utf8
+# coding:utf8
 import requests
 import time
 import json
+
 FAIL_SLEEP_TIME = 10
 host = 'http://127.0.0.1:5002'
 
@@ -9,7 +10,7 @@ host = 'http://127.0.0.1:5002'
 def get_account(site, logger=None):
     while True:
         try:
-            url = '%s/select?site=%s'%(host,site)
+            url = '%s/select?site=%s' % (host, site)
             res = requests.get(url)
             return json.loads(res.text)['data']
         except Exception as e:
@@ -18,11 +19,12 @@ def get_account(site, logger=None):
             else:
                 print str(e)
             time.sleep(FAIL_SLEEP_TIME)
+
 
 def delete_account(uid, logger=None):
     while True:
         try:
-            url = '%s/delete?uid=%s'%(host,uid)
+            url = '%s/delete?uid=%s' % (host, uid)
             res = requests.get(url)
             return json.loads(res.text)['data']
         except Exception as e:
@@ -32,10 +34,11 @@ def delete_account(uid, logger=None):
                 print str(e)
             time.sleep(FAIL_SLEEP_TIME)
 
+
 def insert_account(site, uname, passwd, cookie, logger=None):
     while True:
         try:
-            url = '%s/insert?site=%s&uname=%s&passwd=%s&cookie=%s'%(host,site,uname,passwd,cookie)
+            url = '%s/insert?site=%s&uname=%s&passwd=%s&cookie=%s' % (host, site, uname, passwd, cookie)
             res = requests.get(url)
             return json.loads(res.text)['data']
         except Exception as e:
@@ -44,3 +47,9 @@ def insert_account(site, uname, passwd, cookie, logger=None):
             else:
                 print str(e)
             time.sleep(FAIL_SLEEP_TIME)
+
+
+if __name__ == "__main__":
+    print insert_account()
+    print get_account()
+    print delete_account()
